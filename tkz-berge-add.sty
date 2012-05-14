@@ -1,0 +1,147 @@
+\usetikzlibrary{3d}
+\tikzset{xzplane/.style={canvas is xz plane at y=#1}}
+\tikzset{xyplane/.style={canvas is xy plane at z=#1}}
+\tikzset{yzplane/.style={canvas is yz plane at x=#1}}
+
+\newcommand{\grFlowerSnark}[2][]{%
+  \begingroup
+  \setkeys[GR]{cl}{#1}%
+  \edef\tkzb@rtemp{\cmdGR@cl@RA}
+  \edef\tkzb@rtempx{\cmdGR@cl@RB}
+  \edef\tkzb@ptemp{\cmdGR@cl@RC}
+  \pgfmathsetcounter{tkz@gr@a}{(#2-1)/2}
+  \pgfmathsetcounter{tkz@gr@b}{(#2+1)/2}
+  \grCycle[RA=\tkzb@ptemp,prefix=b,rotation=90]{#2}
+  \grEmptyCycle[RA=\tkzb@rtempx,prefix=a,rotation=90]{#2}
+  \pgfmathsetmacro{\smallshift}{360/(5*#2)}
+  \grEmptyCycle[RA=\tkzb@rtemp,prefix=c,rotation=90+\smallshift]{#2}
+  \grEmptyCycle[RA=\tkzb@rtemp,prefix=d,rotation=90-\smallshift]{#2}
+  \EdgeIdentity{a}{b}{#2}
+  \EdgeIdentity{a}{c}{#2}
+  \EdgeIdentity{a}{d}{#2}
+  \Edge(c\thetkz@gr@a)(d\thetkz@gr@b)
+  \pgfmathsetcounter{tkz@gr@c}{\thetkz@gr@a-1}
+  \pgfmathsetcounter{tkz@gr@d}{\thetkz@gr@b+1}
+  {\tikzset{EdgeStyle/.append style = {bend right=90}}
+    \EdgeDoubleMod{c}{#2}{0}{1}{c}{#2}{1}{1}{\thetkz@gr@c}
+    \EdgeDoubleMod{c}{#2}{\thetkz@gr@b}{1}{c}{#2}{\thetkz@gr@d}{1}{\thetkz@gr@c}
+    \EdgeDoubleMod{d}{#2}{0}{1}{d}{#2}{1}{1}{\thetkz@gr@c}
+    \EdgeDoubleMod{d}{#2}{\thetkz@gr@b}{1}{d}{#2}{\thetkz@gr@d}{1}{\thetkz@gr@c}
+  }
+  \Edge[style={bend right=90}](d\thetkz@gr@a)(c\thetkz@gr@b)
+  \endgroup
+}
+
+\newcommand{\grOctahedron}[2][]{%
+  \begingroup
+  \setkeys[GR]{cl}{#1}%
+  \edef\tkzb@rtemp{\cmdGR@cl@RA}
+  \pgfmathsetmacro{\smallshift}{360/(5*#2)}
+  \grComplete[RA=\tkzb@rtemp,prefix=a,rotation=90+\smallshift]{#2}
+  \grComplete[RA=\tkzb@rtemp,prefix=b,rotation=90-\smallshift]{#2}
+  \pgfmathsetcounter{tkz@gr@a}{#2-1}
+  \foreach \x in  {0,...,\thetkz@gr@a}{%
+    \EdgeFromOneToComp{a}{b}{\x}{#2}
+    }
+  \endgroup
+}
+
+\newcommand{\grDiskTriangulation}[2]{%
+  \newcommand{\en}{#1}
+  \pgfmathsetmacro{\enminusfour}{\en-4}
+  \pgfmathsetmacro{\enminusfive}{\en-5}
+  \pgfmathsetmacro{\secondlev}{\en*(\en-4)}
+  \pgfmathsetmacro{\thirdlev}{\en*(\en-3)*(\en-5)}
+  \pgfmathsetmacro{\fourthlev}{(\en-4)*\thirdlev-\secondlev}
+  \pgfmathsetmacro{\skiptwo}{(\en-5)*(\en-3)}
+  \pgfmathsetmacro{\skipthree}{(\en-4)^3-2*(\en-4)}
+  \Vertex{x0}
+  \grCycle[RA=3,prefix=a]{\en}
+  \EdgeFromOneToAll{x}{a}{0}{\en}
+  \grCycle[RA=6,prefix=b,rotation=360/(2*\en)]{\secondlev}
+  \foreach\x in  {0,...,\enminusfour}{%
+    \EdgeDoubleMod{a}{\en}{0}{1}{b}{\secondlev}{-\x}{\enminusfour}{\en}
+  }
+  \newcommand{\secondarg}{#2}
+  \ifthenelse{#2=3 \or #2=4}{%
+    \grCycle[RA=10,prefix=c,rotation=360/(2*\en)+360/(2*\secondlev)]{\thirdlev}
+    \foreach\x in  {0,...,\enminusfive}{%
+      \EdgeDoubleMod{b}{\secondlev}{0}{\enminusfour}{c}{\thirdlev}{-\x}{\skiptwo}{\en}
+    }
+    \foreach\x in {1,...,\enminusfive}{%
+      \foreach\y in {0,...,\enminusfour}{%
+        \pgfmathsetmacro{\skiphere}{\y+\enminusfour*(\x-1)}
+        \EdgeDoubleMod{b}{\secondlev}{\x}{\enminusfour}{c}{\thirdlev}{\skiphere}{\skiptwo}{\en}
+      }
+    }}{}
+  \ifthenelse{#2=4}{%
+    \grCycle[RA=20,prefix=d,rotation=360/(2*\en)+360/(2*\secondlev)+360/(2*\thirdlev)]{\fourthlev}
+    \foreach\z in {1,...,\en}{%
+      \foreach\x in  {0,...,\enminusfive}{%
+        {
+          \pgfmathsetmacro{\newc}{\skiptwo*(\z-1)}
+          \pgfmathsetmacro{\newd}{\skipthree*(\z-1)-\x}
+          \EdgeDoubleMod{c}{\thirdlev}{\newc}{\enminusfour}{d}{\fourthlev}{\newd}{\skiptwo}{\enminusfive}
+        }
+      }
+    }
+    \foreach\z in {1,...,\enminusfive}{%
+      \foreach\x in  {1,...,\enminusfive}{%
+        \foreach\y in {0,...,\enminusfour}{%
+          \pgfmathsetmacro{\skiphere}{\y+\enminusfour*(\x-1)}
+          \pgfmathsetmacro{\newc}{\x+\enminusfour*(\z-1)}
+          \pgfmathsetmacro{\newd}{\skiphere+\skiptwo*(\z-1)}
+          \EdgeDoubleMod{c}{\thirdlev}{\newc}{\skiptwo}{d}{\fourthlev}{\newd}{\skipthree}{\en}
+        }
+      }
+    }
+    \pgfmathsetmacro{\enminussix}{\en-6}
+    \foreach\z in {1,...,\enminussix}{%
+      \pgfmathsetmacro{\newc}{\skiptwo-\z}
+      \pgfmathsetmacro{\newd}{\skipthree+1-\enminusfour*\z}
+      \foreach\x in  {0,...,\enminusfour}{%
+        \EdgeDoubleMod{c}{\thirdlev}{\newc}{\skiptwo}{d}{\fourthlev}{\newd-\x}{\skipthree}{\en}
+      }
+    }
+  }{}
+}
+
+% \newcommand{\grDiskTriangulation}[4][]{%
+%   \begingroup
+%   \setkeys[GR]{cl}{#1}%
+%   \edef\tkzb@rtemp{\cmdGR@cl@RA}
+%   \foreach \x in {0,...,#3}{%
+%     }
+%   \endgroup
+% }
+
+\renewcommand{\SetVertexForPresentation}[3]{%
+  \GraphInit[vstyle=Shade]
+  \SetVertexNoLabel
+  \renewcommand*{\VertexBigMinSize}{8pt}
+  \renewcommand*{\EdgeDoubleDistance}{2pt}
+  \renewcommand*{\EdgeLineWidth}{0.7pt}
+  \SetGraphShadeColor{#1}{#2}{#3}
+}
+
+\renewcommand*{\AssignVertexLabel}[3][]{%
+\begingroup%
+  \setkeys[GR]{AVL}{#1}
+  \foreach \name [count=\xi from 0] in {#3}{%
+  \ifGR@AVL@Math%
+     \node[AssignStyle] at (#2\xi)
+       {$\textcolor{\cmdGR@AVL@color}{\cmdGR@AVL@mathsize\name}$};
+  \else
+   \node[AssignStyle] at (#2\xi)
+       {\textcolor{\cmdGR@AVL@color}{\cmdGR@AVL@size\name}};
+  \fi}
+
+\endgroup%
+}
+
+\newcommand{\EdgesSequence}[5]{%
+  \pgfmathsetcounter{tkz@gr@ta}{#3-1}
+  \foreach \x in  {#4,...,\thetkz@gr@ta}{%
+    \pgfmathsetcounter{tkz@gr@tb}{\x+#5}
+    \Edge(#1\x)(#2\thetkz@gr@tb)%
+  }}
