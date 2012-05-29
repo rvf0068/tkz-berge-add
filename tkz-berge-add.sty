@@ -149,26 +149,41 @@
   \setkeys[GR]{cl}{#1}%
   \pgfmathsetcounter{tkz@gr@p}{#2-1}
   \edef\tkz@auxctp{\thetkz@gr@p}
-  \pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp}
-  \foreach \V@x in  {\cmdGR@cl@InitIndex,...,\cycle@end}{%
+  %\pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp}
+  \foreach \V@x in  {0,...,\tkz@auxctp}{%
     \pgfmathparse{360/#2*\V@x+\cmdGR@cl@rotation}
     \let\tkz@angle\pgfmathresult%
 \pgfmathsetmacro{\x@result}{%
   \cmdGR@cl@RA*cos(\tkz@angle)+\cmdGR@cl@r*cos(\cmdGR@cl@d)}    
   \pgfmathsetmacro{\y@result}{%
-  \cmdGR@cl@RA*sin(\tkz@angle)+\cmdGR@cl@r*sin(\cmdGR@cl@d)}
+    \cmdGR@cl@RA*sin(\tkz@angle)+\cmdGR@cl@r*sin(\cmdGR@cl@d)}
+  \pgfmathsetcounter{tkz@gr@i}{\V@x+\cmdGR@cl@InitIndex}
     \ifGR@cl@Math%
     \presetkeys [GR] {vertex} {Math = true}{}%
     \Vertex[x = \x@result+\cmdGR@cl@x,%
             y = \y@result+\cmdGR@cl@y,%
-            L = \cmdGR@cl@prefix\grMathSep{\V@x}]{\cmdGR@cl@prefix\V@x}%
+            L = \cmdGR@cl@prefix\grMathSep{\V@x}]{\cmdGR@cl@prefix\thetkz@gr@i}%
     \else%
     \Vertex[x = \x@result+\cmdGR@cl@x,%
-            y = \y@result+\cmdGR@cl@y]{\cmdGR@cl@prefix\V@x}%
+            y = \y@result+\cmdGR@cl@y]{\cmdGR@cl@prefix\thetkz@gr@i}%
     \fi%
   }%
   \endgroup%
 }
+
+\renewcommand*{\grCycle}[2][]{%
+  \begingroup%
+  \setkeys[GR]{cl}{#1}
+  \pgfmathsetcounter{tkz@gr@p}{#2-1}
+  \edef\tkz@auxctp{\thetkz@gr@p}
+  \pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp-1}
+  \pgfmathsetcounter{tkz@gr@ta}{\cmdGR@cl@InitIndex+\thetkz@gr@p}
+  \grEmptyCycle[#1]{#2}
+  \EdgeInGraphSeq{\cmdGR@cl@prefix}{\cmdGR@cl@InitIndex}{\cycle@end}
+  \Edge(\cmdGR@cl@prefix\cmdGR@cl@InitIndex)(\cmdGR@cl@prefix\thetkz@gr@ta)
+\endgroup%
+}
+
 
 %%%% end redefinitions
 
