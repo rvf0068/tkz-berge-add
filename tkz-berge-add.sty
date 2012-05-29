@@ -149,7 +149,6 @@
   \setkeys[GR]{cl}{#1}%
   \pgfmathsetcounter{tkz@gr@p}{#2-1}
   \edef\tkz@auxctp{\thetkz@gr@p}
-  %\pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp}
   \foreach \V@x in  {0,...,\tkz@auxctp}{%
     \pgfmathparse{360/#2*\V@x+\cmdGR@cl@rotation}
     \let\tkz@angle\pgfmathresult%
@@ -184,6 +183,56 @@
 \endgroup%
 }
 
+\renewcommand*{\grEmptyPathNoStar}[2][]{%
+\begingroup%
+\setkeys[GR]{cl}{#1}%
+\pgfmathsetcounter{tkz@gr@a}{#2-1}
+\edef\tkz@auxctp{\thetkz@gr@a}
+ \ifcase\cmdGR@cl@form
+\or
+\def\tkzb@result{0}
+\foreach \V@x in  {0,...,\tkz@auxctp}{%
+   \pgfmathsetmacro{\x@result}{\cmdGR@cl@RA*(\V@x)*cos(\cmdGR@cl@rotation)}
+   \pgfmathsetmacro{\y@result}{\cmdGR@cl@RA*(\V@x)*sin(\cmdGR@cl@rotation)}
+ \pgfmathsetmacro{\x@coord}{\x@result+\cmdGR@cl@x+\cmdGR@cl@r*cos(\cmdGR@cl@d)}
+ \pgfmathsetmacro{\y@coord}{\y@result+\cmdGR@cl@y+
+   \cmdGR@cl@r*sin(\cmdGR@cl@d)+\cmdGR@cl@RS}
+ \pgfmathsetcounter{tkz@gr@i}{\V@x+\cmdGR@cl@InitIndex}
+  \ifGR@cl@Math%
+        \presetkeys [GR] {vertex} {Math = true}{}%
+        \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
+          \write@math{\x@coord}{\y@coord}{\thetkz@gr@i}}{%
+          \write@math{\x@coord}{\y@coord}{\thetkz@gr@i\grLabelSep\cmdGR@cl@num}}%
+         \else
+           \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
+             \write@nomath{\x@coord}{\y@coord}{\thetkz@gr@i}}{%
+             \write@nomath{\x@coord+\cmdGR@cl@x}{\y@coord}{%
+                            \thetkz@gr@i\grLabelSep\cmdGR@cl@num}}%
+        \fi}%
+ \or
+\foreach \V@x in  {0,...,\tkz@auxctp}{%
+  \pgfmathsetmacro{\x@result}{%
+      \cmdGR@cl@RA*(2*\V@x-\thetkz@gr@a)*0.5*cos(\cmdGR@cl@rotation)}
+  \pgfmathsetmacro{\y@result}{%
+      \cmdGR@cl@RA*(2*\V@x-\thetkz@gr@a)*0.5*sin(\cmdGR@cl@rotation)}
+  \pgfmathsetmacro{\x@coord}{%
+                \x@result+\cmdGR@cl@x+\cmdGR@cl@r*cos(\cmdGR@cl@d)}
+  \pgfmathsetmacro{\y@coord}{%
+         \y@result+\cmdGR@cl@y+\cmdGR@cl@r*sin(\cmdGR@cl@d)+\cmdGR@cl@RS}
+  \ifGR@cl@Math%
+     \presetkeys [GR] {vertex} {Math = true}{}%
+     \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
+          \write@math{\x@coord}{\y@coord}{\thetkz@gr@i}}{%
+          \write@math{\x@coord}{\y@coord}{\cmdGR@cl@num\grLabelSep\thetkz@gr@i}}%
+  \else
+    \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
+             \write@nomath{\x@coord}{\y@coord}{\thetkz@gr@i}}{%
+             \write@nomath{\x@coord}{\y@coord}{\cmdGR@cl@num\grLabelSep\thetkz@gr@i}}%
+  \fi
+}%
+\fi
+\endgroup%
+}
 
 %%%% end redefinitions
 
