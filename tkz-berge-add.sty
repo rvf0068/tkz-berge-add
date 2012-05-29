@@ -115,6 +115,8 @@
 %   \endgroup
 % }
 
+%%%% redefinitions
+
 \renewcommand{\SetVertexForPresentation}[3]{%
   \GraphInit[vstyle=Shade]
   \SetVertexNoLabel
@@ -138,6 +140,37 @@
 
 \endgroup%
 }
+
+\define@cmdkey  [GR] {cl} {InitIndex}{}
+\presetkeys     [GR] {cl} {InitIndex = 0}{}
+
+\renewcommand*{\grEmptyCycleNoStar}[2][]{%
+  \begingroup%
+  \setkeys[GR]{cl}{#1}%
+  \pgfmathsetcounter{tkz@gr@p}{#2-1}
+  \edef\tkz@auxctp{\thetkz@gr@p}
+  \pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp}
+  \foreach \V@x in  {\cmdGR@cl@InitIndex,...,\cycle@end}{%
+    \pgfmathparse{360/#2*\V@x+\cmdGR@cl@rotation}
+    \let\tkz@angle\pgfmathresult%
+\pgfmathsetmacro{\x@result}{%
+  \cmdGR@cl@RA*cos(\tkz@angle)+\cmdGR@cl@r*cos(\cmdGR@cl@d)}    
+  \pgfmathsetmacro{\y@result}{%
+  \cmdGR@cl@RA*sin(\tkz@angle)+\cmdGR@cl@r*sin(\cmdGR@cl@d)}
+    \ifGR@cl@Math%
+    \presetkeys [GR] {vertex} {Math = true}{}%
+    \Vertex[x = \x@result+\cmdGR@cl@x,%
+            y = \y@result+\cmdGR@cl@y,%
+            L = \cmdGR@cl@prefix\grMathSep{\V@x}]{\cmdGR@cl@prefix\V@x}%
+    \else%
+    \Vertex[x = \x@result+\cmdGR@cl@x,%
+            y = \y@result+\cmdGR@cl@y]{\cmdGR@cl@prefix\V@x}%
+    \fi%
+  }%
+  \endgroup%
+}
+
+%%%% end redefinitions
 
 \newcommand{\EdgesSequence}[5]{%
   \pgfmathsetcounter{tkz@gr@ta}{#3-1}
@@ -214,7 +247,7 @@
   \grEmptyCycle*[x=\x@coord,y=\the@yheight,RA=\the@rada,rotation=90]%
   {\the@prefix7,\the@prefix8,\the@prefix9}
 
-  \Edge(\the@prefix3)(\the@prefix4)
+  %\Edge(\the@prefix3)(\the@prefix4)
 
   % \Edges(\the@prefix4,\the@prefix5,\the@prefix6)
   % \Edges(\the@prefix8,\the@prefix7,\the@prefix9)
