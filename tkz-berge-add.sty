@@ -266,6 +266,21 @@
 \endgroup%
 }
 
+%% grComplete has to be redefined to use InitIndex
+\renewcommand*{\grComplete}[2][]{% #1 options #2 ordre du graphe
+\begingroup%
+  \setkeys[GR]{cl}{#1}%
+  \grEmptyCycle[#1]{#2}%
+  \pgfmathsetcounter{tkz@gr@a}{#2-1}
+  \edef\tkz@auxctp{\thetkz@gr@a}
+  \pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp}
+  \foreach \ia in {\cmdGR@cl@InitIndex,...,\cycle@end}%
+     {\foreach \ib in {\ia,...,\cycle@end}
+     {\Edge(\cmdGR@cl@prefix\ia)(\cmdGR@cl@prefix\ib)}%
+      }%
+\endgroup%
+}
+
 %%%% end redefinitions
 
 \newcommand{\EdgesSequence}[5]{%
@@ -354,19 +369,50 @@
 
   \Edges(\the@prefix3,\the@prefix5,\the@prefix7)
   \Edges(\the@prefix8,\the@prefix7,\the@prefix9)
-
-  % \pgfmathsetmacro{\the@yheight}{(sqrt(3)+1)*\the@rad/sqrt(2)}
-  % \pgfmathsetmacro{\the@xc}{\x@coord+\the@yheight*cos(90+\the@rot)}
-  % \pgfmathsetmacro{\the@yc}{\y@coord+\the@yheight*sin(90+\the@rot)}
-  
-  % \Vertex[x=\the@xc,y=\the@yc]{\the@prefix4}
-
-  % \Edge(\the@prefix0)(\the@prefix4)
-  % \Edge(\the@prefix1)(\the@prefix4)
-
-  %\ifcase\cmdGR@cl@form
-  %\or
-  %\or
-  %\fi
   \endgroup%
 }
+
+\newcommand*{\grCliqueGraphOfMan}[1][]{%
+  \begingroup%
+  \setkeys[GR]{cl}{#1}%
+  \edef\x@coord{\cmdGR@cl@x}
+  \edef\y@coord{\cmdGR@cl@y}
+  \edef\r@coord{\cmdGR@cl@r}
+  \edef\d@coord{\cmdGR@cl@d}
+  \edef\the@prefix{\cmdGR@cl@prefix}
+  \edef\the@rad{\cmdGR@cl@RA}
+  \edef\the@rot{\cmdGR@cl@rotation}
+
+  \pgfmathsetmacro{\the@halfrad}{(1/2)*\the@rad}
+  \pgfmathsetmacro{\the@yheight}{(3/2)*\the@rad}
+  \pgfmathsetmacro{\the@xhead}{-sin(\the@rot)*\the@yheight+\x@coord}
+  \pgfmathsetmacro{\the@yhead}{cos(\the@rot)*\the@yheight+\y@coord}
+
+  \Vertex[x=\the@xhead,y=\the@yhead]{\the@prefix0}
+
+  \grComplete[prefix=\the@prefix,
+  x=\x@coord,
+  y=\y@coord,
+  rotation=\the@rot,
+  RA=\the@halfrad,
+  InitIndex=1]{4}
+
+  \pgfmathsetmacro{\the@rada}{\the@rad*sqrt(3)/2}
+  \pgfmathsetmacro{\the@yheight}{-\the@halfrad-\the@rada}
+  \pgfmathsetmacro{\the@xlegs}{-sin(\the@rot)*\the@yheight+\x@coord}
+  \pgfmathsetmacro{\the@ylegs}{cos(\the@rot)*\the@yheight+\y@coord}
+
+  \grPath[prefix=\the@prefix,
+  form=2,
+  x=\the@xlegs,
+  y=\the@ylegs,
+  RA=\the@rad,
+  rotation=\the@rot,
+  InitIndex=5]{2}%
+
+  \Edge(\the@prefix0)(\the@prefix2)
+  \Edge(\the@prefix4)(\the@prefix5)
+  \Edge(\the@prefix4)(\the@prefix6)
+  \endgroup%
+}
+
