@@ -322,31 +322,38 @@
   \edef\the@rad{\cmdGR@cl@RA}
   \edef\the@rot{\cmdGR@cl@rotation}
 
-  \pgfmathsetmacro{\the@yheight}{\y@coord+\the@rad}
   \pgfmathsetmacro{\the@halfrad}{(1/2)*\the@rad}
+  \pgfmathsetmacro{\the@xhead}{-sin(\the@rot)*\the@rad+\x@coord}
+  \pgfmathsetmacro{\the@yhead}{cos(\the@rot)*\the@rad+\y@coord}
 
-  \grComplete[%
-  prefix=\the@prefix,
-  x=\x@coord,
-  y=\the@yheight,
-  r=\r@coord,
-  d=\d@coord,
+  \grComplete[prefix=\the@prefix,
+  x=\the@xhead,
+  y=\the@yhead,
   rotation=\the@rot,
   RA=\the@halfrad]{4}
 
-  \grEmptyPath*[form=2,x=\x@coord,y=\y@coord,RA=\the@rad]%
-  {\the@prefix4,\the@prefix5,\the@prefix6}
+  \grPath[prefix=\the@prefix,
+  form=2,
+  x=\x@coord,
+  y=\y@coord,
+  rotation=\the@rot,
+  RA=\the@rad,
+  InitIndex=4]{3}
 
   \pgfmathsetmacro{\the@rada}{\the@rad/sqrt(3)}
-  \pgfmathsetmacro{\the@yheight}{\y@coord-\the@rad-\the@rada}
+  \pgfmathsetmacro{\the@yheight}{-\the@rad-\the@rada}
+  \pgfmathsetmacro{\the@xlegs}{-sin(\the@rot)*\the@yheight+\x@coord}
+  \pgfmathsetmacro{\the@ylegs}{cos(\the@rot)*\the@yheight+\y@coord}
 
-  \grEmptyCycle*[x=\x@coord,y=\the@yheight,RA=\the@rada,rotation=90]%
-  {\the@prefix7,\the@prefix8,\the@prefix9}
+  \grEmptyCycle[prefix=\the@prefix,
+  x=\the@xlegs,
+  y=\the@ylegs,
+  RA=\the@rada,
+  rotation=90+\the@rot,
+  InitIndex=7]{3}%
 
-  %\Edge(\the@prefix3)(\the@prefix4)
-
-  % \Edges(\the@prefix4,\the@prefix5,\the@prefix6)
-  % \Edges(\the@prefix8,\the@prefix7,\the@prefix9)
+  \Edges(\the@prefix3,\the@prefix5,\the@prefix7)
+  \Edges(\the@prefix8,\the@prefix7,\the@prefix9)
 
   % \pgfmathsetmacro{\the@yheight}{(sqrt(3)+1)*\the@rad/sqrt(2)}
   % \pgfmathsetmacro{\the@xc}{\x@coord+\the@yheight*cos(90+\the@rot)}
