@@ -219,6 +219,7 @@
                 \x@result+\cmdGR@cl@x+\cmdGR@cl@r*cos(\cmdGR@cl@d)}
   \pgfmathsetmacro{\y@coord}{%
          \y@result+\cmdGR@cl@y+\cmdGR@cl@r*sin(\cmdGR@cl@d)+\cmdGR@cl@RS}
+  \pgfmathsetcounter{tkz@gr@i}{\V@x+\cmdGR@cl@InitIndex}
   \ifGR@cl@Math%
      \presetkeys [GR] {vertex} {Math = true}{}%
      \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
@@ -231,6 +232,37 @@
   \fi
 }%
 \fi
+\endgroup%
+}
+
+\renewcommand*{\grPath}[2][]{%
+\begingroup%
+    \setkeys[GR]{cl}{#1}%
+  \pgfmathsetcounter{tkz@gr@p}{#2-1}
+  \edef\tkz@auxctp{\thetkz@gr@p}
+  \pgfmathsetmacro{\cycle@end}{\cmdGR@cl@InitIndex+\tkz@auxctp-1}
+     \grEmptyPath[#1]{#2}
+    \ifthenelse{\equal{\cmdGR@cl@num}{}}{%
+  \ifthenelse{\equal{#2}{1}}{}{%
+    %\EdgeInGraphLoop*{\cmdGR@cl@prefix}{#2}%
+    \EdgeInGraphSeq{\cmdGR@cl@prefix}{\cmdGR@cl@InitIndex}{\cycle@end}
+      }}{%
+         \ifthenelse{\equal{#2}{1}}{}{%
+        \ifcase\cmdGR@cl@form
+        \or
+          \pgfmathsetcounter{tkz@gr@ta}{#2-2}
+          \setcounter{tkz@gr@n}{0}
+             \edef\tkz@auxctp{\thetkz@gr@ta}
+          \foreach \V@x in  {0,...,\tkz@auxctp}{%
+              \stepcounter{tkz@gr@n}
+              \Edge(\cmdGR@cl@prefix\V@x\grLabelSep\cmdGR@cl@num)%
+                   (\cmdGR@cl@prefix\thetkz@gr@n\grLabelSep\cmdGR@cl@num)%
+              }%
+           \or
+           % \EdgeInGraphLoop*{\cmdGR@cl@prefix\cmdGR@cl@num\grLabelSep}{#2}
+           \EdgeInGraphSeq{\cmdGR@cl@prefix}{\cmdGR@cl@InitIndex}{\cycle@end}
+          \fi%
+ }}
 \endgroup%
 }
 
