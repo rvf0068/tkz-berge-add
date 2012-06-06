@@ -266,7 +266,7 @@
 \endgroup%
 }
 
-%% grComplete has to be redefined to use InitIndex
+%% grComplete had to be redefined to use InitIndex
 \renewcommand*{\grComplete}[2][]{% #1 options #2 ordre du graphe
 \begingroup%
   \setkeys[GR]{cl}{#1}%
@@ -278,6 +278,26 @@
      {\foreach \ib in {\ia,...,\cycle@end}
      {\Edge(\cmdGR@cl@prefix\ia)(\cmdGR@cl@prefix\ib)}%
       }%
+\endgroup%
+}
+
+\renewcommand{\grEmptyGrid}[3][]{%
+\begingroup%
+\setkeys[GR]{cl}{#1}%
+  \edef\x@coord{\cmdGR@cl@x}
+  \edef\y@coord{\cmdGR@cl@y}
+   \pgfmathsetcounter{tkz@gr@a}{#2-1}
+       \edef\tkz@auxctpa{\thetkz@gr@a}
+   \pgfmathsetcounter{tkz@gr@b}{#3-1}
+       \edef\tkz@auxctpb{\thetkz@gr@b}
+   \foreach \V@x in {0,...,\tkz@auxctpa}{%
+      \foreach \V@y in {0,...,\tkz@auxctpb}{%
+      \ifGR@cl@Math\presetkeys [GR] {vertex} {Math = true}{}%
+         \write@math{\cmdGR@cl@RA*\V@x+\x@coord}{\cmdGR@cl@RB*\V@y+\y@coord}{\V@x\grLabelSep\V@y}%
+      \else
+         \write@nomath{\cmdGR@cl@RA*\V@x+\x@coord}{\cmdGR@cl@RB*\V@y+\y@coord}{\V@x\grLabelSep\V@y}%
+      \fi}%
+   }
 \endgroup%
 }
 
@@ -416,3 +436,28 @@
   \endgroup%
 }
 
+\newcommand{\grCompletedGrid}[3][]{%
+  \begingroup%
+  \setkeys[GR]{cl}{#1}%
+  \edef\x@coord{\cmdGR@cl@x}
+  \edef\y@coord{\cmdGR@cl@y}
+  \edef\RA@dim{\cmdGR@cl@RA}
+  \edef\RB@dim{\cmdGR@cl@RB}
+  \edef\the@prefix{\cmdGR@cl@prefix}
+  \ifGR@cl@Math
+      \grGrid[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      RA=\RA@dim,
+      RB=\RB@dim,Math]{#2}{#3}
+  \else
+      \grGrid[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      RA=\RA@dim,
+      RB=\RB@dim]{#2}{#3}
+  \fi
+  \endgroup
+}
