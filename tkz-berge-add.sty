@@ -303,6 +303,8 @@
 
 %%%% end redefinitions
 
+
+% for each x from [#4] to [#3-1], draw the edge from #1x to #2{x+#5}
 \newcommand{\EdgesSequence}[5]{%
   \pgfmathsetcounter{tkz@gr@ta}{#3-1}
   \foreach \x in  {#4,...,\thetkz@gr@ta}{%
