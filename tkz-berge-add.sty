@@ -461,5 +461,14 @@
       RA=\RA@dim,
       RB=\RB@dim]{#2}{#3}
   \fi
+  \pgfmathsetcounter{tkz@gr@b}{#2-2}
+  \pgfmathsetcounter{tkz@gr@c}{#3-1}
+  \foreach \xx in {0,...,\thetkz@gr@b}{%
+    \pgfmathsetcounter{tkz@gr@d}{\xx+1}
+    \EdgesSequence{\the@prefix\xx\grLabelSep}%
+        {\the@prefix\thetkz@gr@d\grLabelSep}{\thetkz@gr@c}{0}{1}
+    \EdgesSequence{\the@prefix\xx\grLabelSep}%
+        {\the@prefix\thetkz@gr@d\grLabelSep}{#3}{1}{-1}
+      }
   \endgroup
 }
