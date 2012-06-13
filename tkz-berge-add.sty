@@ -323,21 +323,36 @@
   \edef\the@rad{\cmdGR@cl@RA}
   \edef\the@rot{\cmdGR@cl@rotation}
 
-  \grCycle[%
-  prefix=\the@prefix,
-  x=\x@coord,
-  y=\y@coord,
-  r=\r@coord,
-  d=\d@coord,
-  rotation=45+\the@rot,
-  RA=\the@rad]{4}
+  \ifGR@cl@Math
+      \grCycle[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      r=\r@coord,
+      d=\d@coord,
+      rotation=45+\the@rot,
+      Math,
+      RA=\the@rad]{4}
+  \else
+      \grCycle[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      r=\r@coord,
+      d=\d@coord,
+      rotation=45+\the@rot,
+      RA=\the@rad]{4}    
+  \fi
 
   \pgfmathsetmacro{\the@yheight}{(sqrt(3)+1)*\the@rad/sqrt(2)}
   \pgfmathsetmacro{\the@xc}{\x@coord+\the@yheight*cos(90+\the@rot)}
   \pgfmathsetmacro{\the@yc}{\y@coord+\the@yheight*sin(90+\the@rot)}
   
-  \Vertex[x=\the@xc,y=\the@yc]{\the@prefix4}
-
+  \ifGR@cl@Math%\presetkeys [GR] {vertex} {Math = true}{}
+      \Vertex[x=\the@xc,y=\the@yc,Math,L={\the@prefix_{4}}]{\the@prefix4}
+  \else
+      \Vertex[x=\the@xc,y=\the@yc]{\the@prefix4}
+  \fi
   \Edge(\the@prefix0)(\the@prefix4)
   \Edge(\the@prefix1)(\the@prefix4)
 
