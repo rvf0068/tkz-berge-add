@@ -348,18 +348,13 @@
   \pgfmathsetmacro{\the@xc}{\x@coord+\the@yheight*cos(90+\the@rot)}
   \pgfmathsetmacro{\the@yc}{\y@coord+\the@yheight*sin(90+\the@rot)}
   
-  \ifGR@cl@Math%\presetkeys [GR] {vertex} {Math = true}{}
+  \ifGR@cl@Math
       \Vertex[x=\the@xc,y=\the@yc,Math,L={\the@prefix_{4}}]{\the@prefix4}
   \else
       \Vertex[x=\the@xc,y=\the@yc]{\the@prefix4}
   \fi
   \Edge(\the@prefix0)(\the@prefix4)
   \Edge(\the@prefix1)(\the@prefix4)
-
-  %\ifcase\cmdGR@cl@form
-  %\or
-  %\or
-  %\fi
   \endgroup%
 }
 
@@ -485,5 +480,37 @@
     \EdgesSequence{\the@prefix\xx\grLabelSep}%
         {\the@prefix\thetkz@gr@d\grLabelSep}{#3}{1}{-1}
       }
+  \endgroup
+}
+
+% HouseX, as in Sage
+\newcommand{\grHouseX}[1][]{%
+  \begingroup%
+  \setkeys[GR]{cl}{#1}%
+  \edef\x@coord{\cmdGR@cl@x}
+  \edef\y@coord{\cmdGR@cl@y}
+  \edef\RA@dim{\cmdGR@cl@RA}
+  \edef\RB@dim{\cmdGR@cl@RB}
+  \edef\the@prefix{\cmdGR@cl@prefix}
+  \edef\the@rot{\cmdGR@cl@rotation}
+  \ifGR@cl@Math
+      \grHouse[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      rotation=\the@rot,
+      RA=\RA@dim,
+      RB=\RB@dim,Math]
+  \else
+      \grHouse[%
+      prefix=\the@prefix,
+      x=\x@coord,
+      y=\y@coord,
+      rotation=\the@rot,
+      RA=\RA@dim,
+      RB=\RB@dim]
+  \fi
+  \Edge(\the@prefix0)(\the@prefix2)    
+  \Edge(\the@prefix1)(\the@prefix3)    
   \endgroup
 }
