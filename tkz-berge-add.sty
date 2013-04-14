@@ -301,6 +301,39 @@
 \endgroup%
 }
 
+%% redefining \@edge so that all edges are drawn in the background
+\usetikzlibrary{backgrounds}
+\def\@edge[#1](#2)(#3){%
+\setkeys[GR]{edge}{#1}%
+\begingroup%
+       \begin{pgfonlayer}{background}
+\ifthenelse{\equal{\cmdGR@edge@double}{}}{%
+\tikzset{LocalEdgeStyle/.style={color = \cmdGR@edge@color,
+                                line width = \cmdGR@edge@lw}}}{%
+\tikzset{LocalEdgeStyle/.style={line width = \cmdGR@edge@dd,
+                                color = \cmdGR@edge@double,
+                                double distance = \cmdGR@edge@lw,
+                                double  = \cmdGR@edge@color}}}%
+\ifGR@edge@local%
+      \tikzset{EdgeStyle/.style={}}%
+      \fi
+   \ifthenelse{\equal{\cmdGR@edge@label}{}}{%
+     \protected@edef\@tempa{%
+       \noexpand
+         \draw[LocalEdgeStyle,\cmdGR@edge@style,EdgeStyle]}%
+                 \@tempa (#2) to (#3)}{%
+     \protected@edef\@tempa{%
+     \noexpand   \draw[LocalEdgeStyle,\cmdGR@edge@style,EdgeStyle] (#2) to%
+    node[fill = \cmdGR@edge@labelcolor,
+         text = \cmdGR@edge@labeltext,
+         \cmdGR@edge@labelstyle,LabelStyle]}\@tempa
+   {\cmdGR@edge@label} (#3)}%
+   ;
+\end{pgfonlayer}
+\endgroup%
+}%
+
+
 %%%% end redefinitions
 
 
