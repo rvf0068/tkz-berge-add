@@ -307,41 +307,12 @@
 \pgfdeclarelayer{myback}
 \pgfsetlayers{background,myback,main} 
 
-\def\@edge[#1](#2)(#3){%
-\setkeys[GR]{edge}{#1}%
-\begingroup%
-\ifthenelse{\equal{\cmdGR@edge@double}{}}{%
-  \tikzset{LocalEdgeStyle/.style={color = \cmdGR@edge@color,
-      line width = \cmdGR@edge@lw}}}{%
-  \tikzset{LocalEdgeStyle/.style={line width = \cmdGR@edge@dd,
-      color = \cmdGR@edge@double,
-      double distance = \cmdGR@edge@lw,
-      double  = \cmdGR@edge@color}}}%
-\ifGR@edge@local%
-\tikzset{EdgeStyle/.style={}}%
-\fi
-\ifthenelse{\equal{\cmdGR@edge@label}{}}{%
-  \protected@edef\@tempa{%
-    \noexpand\draw[LocalEdgeStyle,\cmdGR@edge@style,EdgeStyle]
-  }%
+\renewcommand*{\Edge}[1][]{%
   \begin{pgfonlayer}{myback}
-    \@tempa (#2) to (#3);
-  \end{pgfonlayer}}{%
-  \protected@edef\@tempa{%
-    \noexpand\draw[LocalEdgeStyle,\cmdGR@edge@style,EdgeStyle] (#2) to%
-    node[fill = \cmdGR@edge@labelcolor,
-    text = \cmdGR@edge@labeltext,
-    \cmdGR@edge@labelstyle,LabelStyle]}%
-  \begin{pgfonlayer}{myback}
-    \@tempa {\cmdGR@edge@label} (#3);
-  \end{pgfonlayer}
-}
-\endgroup%
-}%
-
+    \@edge[#1]%
+  \end{pgfonlayer}}%
 
 %%%% end redefinitions
-
 
 % for each x from [#4] to [#3-1], draw the edge from #1x to #2{x+#5}
 \newcommand{\EdgesSequence}[5]{%
