@@ -302,15 +302,16 @@
 }
 
 %% redefining \@edge so that all edges are drawn in another layer
-\usetikzlibrary{backgrounds}
+% see
+% http://tex.stackexchange.com/questions/108528/placing-a-node-on-top-of-lines-in-tikz
+% and
+% http://tex.stackexchange.com/q/58480/13304
 
-\pgfdeclarelayer{myback}
-\pgfsetlayers{background,myback,main} 
-
-\renewcommand*{\Edge}[1][]{%
-  \begin{pgfonlayer}{myback}
-    \@edge[#1]%
-  \end{pgfonlayer}}%
+% \usetikzlibrary{backgrounds}
+% \pgfdeclarelayer{myback}
+% \pgfsetlayers{background,myback,main} 
+% \begin{pgfonlayer}{myback}
+% \end{pgfonlayer}
 
 %%%% end redefinitions
 
